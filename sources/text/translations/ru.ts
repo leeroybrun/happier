@@ -59,6 +59,7 @@ export const ru: TranslationStructure = {
         discard: 'Отменить',
         version: 'Версия',
         copied: 'Скопировано',
+        copy: 'Копировать',
         scanning: 'Сканирование...',
         urlPlaceholder: 'https://example.com',
         home: 'Главная',
@@ -760,6 +761,13 @@ export const ru: TranslationStructure = {
         textCopied: 'Текст скопирован в буфер обмена',
         failedToCopy: 'Не удалось скопировать текст в буфер обмена',
         noTextToCopy: 'Нет текста для копирования',
+    },
+
+    markdown: {
+        // Markdown copy functionality
+        codeCopied: 'Код скопирован',
+        copyFailed: 'Ошибка копирования',
+        mermaidRenderFailed: 'Не удалось отобразить диаграмму mermaid',
     },
 
     artifacts: {
