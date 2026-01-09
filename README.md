@@ -8,6 +8,15 @@
 Use Claude Code or Codex from anywhere with end-to-end encryption.
 </h4>
 
+## Fork additions (leeroybrun)
+
+This fork tracks upstream (`slopus/happy`) and adds a few features used by **Happy Stacks**:
+
+- **Resume from UI**: resume an existing session from the “New Session” screen by pasting a session id (Claude + Codex). (Upstream PR: https://github.com/slopus/happy/pull/299)
+- **Pending message queue UI**: optional queued-send mode + queue indicator/modal.
+- **Tool view improvements**: toggle “Show diffs in tool views” + better multi-file diff handling + Notebook edit tool views.
+- **Session rename**: rename sessions from the session info screen.
+
 <div align="center">
   
 [📱 **iOS App**](https://apps.apple.com/us/app/happy-claude-code-client/id6748571505) • [🤖 **Android App**](https://play.google.com/store/apps/details?id=com.ex3ndr.happy) • [🌐 **Web App**](https://app.happy.engineering) • [🎥 **See a Demo**](https://youtu.be/GCS0OG9QMSE) • [📚 **Documentation**](https://happy.engineering/docs/) • [💬 **Discord**](https://discord.gg/aVhXZfYh)
