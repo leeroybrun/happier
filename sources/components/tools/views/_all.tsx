@@ -16,11 +16,13 @@ import { NotebookEditViewFull } from './NotebookEditViewFull';
 import { CodexBashView } from './CodexBashView';
 import { CodexPatchView } from './CodexPatchView';
 import { CodexDiffView } from './CodexDiffView';
+import { AskUserQuestionView } from './AskUserQuestionView';
 
 export type ToolViewProps = {
     tool: ToolCall;
     metadata: Metadata | null;
-    messages: Message[]
+    messages: Message[];
+    sessionId?: string;
 }
 
 // Type for tool view components
@@ -39,7 +41,8 @@ export const toolViewRegistry: Record<string, ToolViewComponent> = {
     ExitPlanMode: ExitPlanToolView,
     exit_plan_mode: ExitPlanToolView,
     MultiEdit: MultiEditView,
-    Task: TaskView
+    Task: TaskView,
+    AskUserQuestion: AskUserQuestionView
 };
 
 export const toolFullViewRegistry: Record<string, ToolViewComponent> = {
@@ -73,3 +76,4 @@ export { ExitPlanToolView } from './ExitPlanToolView';
 export { MultiEditView } from './MultiEditView';
 export { TaskView } from './TaskView';
 export { NotebookEditView } from './NotebookEditView';
+export { AskUserQuestionView } from './AskUserQuestionView';

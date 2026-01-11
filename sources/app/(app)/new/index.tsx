@@ -530,6 +530,7 @@ function NewSessionScreen() {
             }
         };
     }, [input, selectedMachineId, selectedPath, agentType, permissionMode, sessionType, resumeSessionId]);
+    }, [input, selectedMachineId, selectedPath, agentType, permissionMode, sessionType, resumeSessionId]);
 
     return (
         <KeyboardAvoidingView
