@@ -57,9 +57,18 @@ export function BaseModal({
             animationType={animationType}
             onRequestClose={onClose}
         >
-            <KeyboardAvoidingView 
+            <KeyboardAvoidingView
                 style={styles.container}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                // On web, stop events from propagating to expo-router's modal overlay
+                {...(Platform.OS === 'web' ? (() => {
+                    const stopPropagation = (e: { stopPropagation: () => void }) => e.stopPropagation();
+                    return {
+                        onStartShouldSetResponder: () => true,
+                        onClick: stopPropagation,
+                        onPointerDown: stopPropagation
+                    };
+                })() : {})}
             >
                 <TouchableWithoutFeedback onPress={handleBackdropPress}>
                     <Animated.View 
@@ -100,7 +109,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        // On web, ensure modal can receive pointer events when body has pointer-events: none
+        ...Platform.select({ web: { pointerEvents: 'auto' as const } })
     },
     backdrop: {
         ...StyleSheet.absoluteFillObject,
