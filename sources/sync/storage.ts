@@ -11,7 +11,7 @@ import { Purchases, customerInfoToPurchases } from "./purchases";
 import { TodoState } from "../-zen/model/ops";
 import { Profile } from "./profile";
 import { UserProfile, RelationshipUpdatedEvent } from "./friendTypes";
-import { loadSettings, loadLocalSettings, saveLocalSettings, saveSettings, loadPurchases, savePurchases, loadProfile, saveProfile, loadSessionDrafts, saveSessionDrafts, loadSessionPermissionModes, saveSessionPermissionModes } from "./persistence";
+import { loadSettings, loadLocalSettings, saveLocalSettings, saveSettings, loadPurchases, savePurchases, loadProfile, saveProfile, loadSessionDrafts, saveSessionDrafts, loadSessionPermissionModes, saveSessionPermissionModes, loadSessionPermissionModeUpdatedAts, saveSessionPermissionModeUpdatedAts } from "./persistence";
 import type { PermissionMode } from '@/components/PermissionModeSelector';
 import type { CustomerInfo } from './revenueCat/types';
 import React from "react";
@@ -250,6 +250,7 @@ export const storage = create<StorageState>()((set, get) => {
     let profile = loadProfile();
     let sessionDrafts = loadSessionDrafts();
     let sessionPermissionModes = loadSessionPermissionModes();
+    let sessionPermissionModeUpdatedAts = loadSessionPermissionModeUpdatedAts();
     return {
         settings,
         settingsVersion: version,
@@ -303,6 +304,7 @@ export const storage = create<StorageState>()((set, get) => {
             // Load drafts and permission modes if sessions are empty (initial load)
             const savedDrafts = Object.keys(state.sessions).length === 0 ? sessionDrafts : {};
             const savedPermissionModes = Object.keys(state.sessions).length === 0 ? sessionPermissionModes : {};
+            const savedPermissionModeUpdatedAts = Object.keys(state.sessions).length === 0 ? sessionPermissionModeUpdatedAts : {};
 
             // Merge new sessions with existing ones
             const mergedSessions: Record<string, Session> = { ...state.sessions };
@@ -318,13 +320,14 @@ export const storage = create<StorageState>()((set, get) => {
                 const existingPermissionMode = state.sessions[session.id]?.permissionMode;
                 const savedPermissionMode = savedPermissionModes[session.id];
                 const existingPermissionModeUpdatedAt = state.sessions[session.id]?.permissionModeUpdatedAt;
+                const savedPermissionModeUpdatedAt = savedPermissionModeUpdatedAts[session.id];
                 mergedSessions[session.id] = {
                     ...session,
                     presence,
                     draft: existingDraft || savedDraft || session.draft || null,
                     permissionMode: existingPermissionMode || savedPermissionMode || session.permissionMode || 'default',
                     // Preserve local coordination timestamp (not synced to server)
-                    permissionModeUpdatedAt: existingPermissionModeUpdatedAt ?? null
+                    permissionModeUpdatedAt: existingPermissionModeUpdatedAt ?? savedPermissionModeUpdatedAt ?? null
                 };
             });
 
@@ -569,13 +572,19 @@ export const storage = create<StorageState>()((set, get) => {
                     // Note: this includes modes inferred from session messages so they load instantly on app restart.
                     if (shouldWritePermissionMode) {
                         const allModes: Record<string, PermissionMode> = {};
+                        const allUpdatedAts: Record<string, number> = {};
                         Object.entries(updatedSessions).forEach(([id, sess]) => {
                             if (sess.permissionMode && sess.permissionMode !== 'default') {
                                 allModes[id] = sess.permissionMode;
                             }
+                            if (typeof sess.permissionModeUpdatedAt === 'number') {
+                                allUpdatedAts[id] = sess.permissionModeUpdatedAt;
+                            }
                         });
                         saveSessionPermissionModes(allModes);
                         sessionPermissionModes = allModes;
+                        saveSessionPermissionModeUpdatedAts(allUpdatedAts);
+                        sessionPermissionModeUpdatedAts = allUpdatedAts;
                     }
                 }
 
@@ -843,14 +852,21 @@ export const storage = create<StorageState>()((set, get) => {
 
             // Collect all permission modes for persistence
             const allModes: Record<string, PermissionMode> = {};
+            const allUpdatedAts: Record<string, number> = {};
             Object.entries(updatedSessions).forEach(([id, sess]) => {
                 if (sess.permissionMode && sess.permissionMode !== 'default') {
                     allModes[id] = sess.permissionMode;
+                }
+                if (typeof sess.permissionModeUpdatedAt === 'number') {
+                    allUpdatedAts[id] = sess.permissionModeUpdatedAt;
                 }
             });
 
             // Persist permission modes (only non-default values to save space)
             saveSessionPermissionModes(allModes);
+            saveSessionPermissionModeUpdatedAts(allUpdatedAts);
+            sessionPermissionModes = allModes;
+            sessionPermissionModeUpdatedAts = allUpdatedAts;
 
             // No need to rebuild sessionListViewData since permission mode doesn't affect the list display
             return {
