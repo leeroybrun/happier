@@ -1,11 +1,11 @@
 <div align="center"><img src="/.github/happier.png" width="400" title="Happy Coder" alt="Happy Coder"/></div>
 
 <h1 align="center">
-  Mobile and Web Client for Claude Code & Codex
+  Mobile and Web Client for Claude Code, Codex, Gemini, OpenCode, Augment Code
 </h1>
 
 <h4 align="center">
-Use Claude Code or Codex from anywhere with end-to-end encryption.
+Use Claude Code, Codex, Gemini, OpenCode, Augment Code from anywhere with end-to-end encryption.
 </h4>
 
 <div align="center">
