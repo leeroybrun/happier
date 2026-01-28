@@ -1,4 +1,4 @@
-<div align="center"><img src="/.github/logotype-dark.png" width="400" title="Happy Coder" alt="Happy Coder"/></div>
+<div align="center"><img src="/.github/happier.png" width="400" title="Happy Coder" alt="Happy Coder"/></div>
 
 <h1 align="center">
   Mobile and Web Client for Claude Code & Codex
