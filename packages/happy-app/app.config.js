@@ -3,6 +3,15 @@ const variant = process.env.APP_ENV || 'development';
 // Allow opt-in overrides for local dev tooling without changing upstream defaults.
 const nameOverride = (process.env.EXPO_APP_NAME || '').trim();
 const bundleIdOverride = (process.env.EXPO_APP_BUNDLE_ID || '').trim();
+const slugOverride = (process.env.EXPO_APP_SLUG || '').trim();
+const ownerOverride = (process.env.EXPO_APP_OWNER || '').trim();
+const easProjectIdOverride = (process.env.EXPO_EAS_PROJECT_ID || '').trim();
+const updatesUrlOverride = (process.env.EXPO_UPDATES_URL || '').trim();
+const updatesChannelOverride = (process.env.EXPO_UPDATES_CHANNEL || '').trim();
+const appLinkHostOverride = (process.env.EXPO_APP_LINK_HOST || '').trim();
+const iosAssociatedDomainsOverride = (process.env.EXPO_IOS_ASSOCIATED_DOMAINS || '').trim();
+const androidGoogleServicesFileOverride = (process.env.EXPO_ANDROID_GOOGLE_SERVICES_FILE || '').trim();
+const iosGoogleServicesFileOverride = (process.env.EXPO_IOS_GOOGLE_SERVICES_FILE || '').trim();
 
 const namesByVariant = {
     development: "Happy (dev)",
@@ -19,6 +28,17 @@ const bundleIdsByVariant = {
 // an invalid Expo config with undefined name/bundle id.
 const name = nameOverride || namesByVariant[variant] || namesByVariant.development;
 const bundleId = bundleIdOverride || bundleIdsByVariant[variant] || bundleIdsByVariant.development;
+const slug = slugOverride || "happy";
+const owner = ownerOverride || "bulkacorp";
+const easProjectId = easProjectIdOverride || "4558dd3d-cd5a-47cd-bad9-e591a241cc06";
+const updatesUrl = updatesUrlOverride || "https://u.expo.dev/4558dd3d-cd5a-47cd-bad9-e591a241cc06";
+const updatesChannel = updatesChannelOverride || "production";
+const appLinkHost = appLinkHostOverride || "app.happy.engineering";
+const iosAssociatedDomains = iosAssociatedDomainsOverride
+    ? iosAssociatedDomainsOverride.split(',').map((s) => s.trim()).filter(Boolean)
+    : [`applinks:${appLinkHost}`];
+const androidGoogleServicesFile = androidGoogleServicesFileOverride || "./google-services.json";
+const iosGoogleServicesFile = iosGoogleServicesFileOverride || "";
 // NOTE:
 // The URL scheme is used for deep linking *and* by the Expo development client launcher flow.
 // Keep the default stable for upstream users, but allow opt-in overrides for local dev variants
@@ -28,7 +48,7 @@ const scheme = (process.env.EXPO_APP_SCHEME || '').trim() || "happy";
 export default {
     expo: {
         name,
-        slug: "happy",
+        slug,
         version: "1.6.2",
         runtimeVersion: "18",
         orientation: "default",
@@ -51,7 +71,8 @@ export default {
                 NSLocalNetworkUsageDescription: "Allow $(PRODUCT_NAME) to find and connect to local devices on your network.",
                 NSBonjourServices: ["_http._tcp", "_https._tcp"]
             },
-            associatedDomains: variant === 'production' ? ["applinks:app.happy.engineering"] : []
+            ...(iosGoogleServicesFile ? { googleServicesFile: iosGoogleServicesFile } : {}),
+            associatedDomains: variant === 'production' ? iosAssociatedDomains : []
         },
         android: {
             adaptiveIcon: {
@@ -70,7 +91,7 @@ export default {
             ],
             edgeToEdgeEnabled: true,
             package: bundleId,
-            googleServicesFile: "./google-services.json",
+            googleServicesFile: androidGoogleServicesFile,
             intentFilters: variant === 'production' ? [
                 {
                     "action": "VIEW",
@@ -78,7 +99,7 @@ export default {
                     "data": [
                         {
                             "scheme": "https",
-                            "host": "app.happy.engineering",
+                            "host": appLinkHost,
                             "pathPrefix": "/"
                         }
                     ],
@@ -165,9 +186,9 @@ export default {
             ]
         ],
         updates: {
-            url: "https://u.expo.dev/4558dd3d-cd5a-47cd-bad9-e591a241cc06",
+            url: updatesUrl,
             requestHeaders: {
-                "expo-channel-name": "production"
+                "expo-channel-name": updatesChannel
             }
         },
         experiments: {
@@ -178,7 +199,7 @@ export default {
                 root: "./sources/app"
             },
             eas: {
-                projectId: "4558dd3d-cd5a-47cd-bad9-e591a241cc06"
+                projectId: easProjectId
             },
             app: {
                 postHogKey: process.env.EXPO_PUBLIC_POSTHOG_API_KEY,
@@ -187,6 +208,6 @@ export default {
                 revenueCatStripeKey: process.env.EXPO_PUBLIC_REVENUE_CAT_STRIPE
             }
         },
-        owner: "bulkacorp"
+        owner
     }
 };
